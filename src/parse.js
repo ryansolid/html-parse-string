@@ -84,7 +84,7 @@ pushCommentNode = function (list, tag) {
 };
 
 
-module.exports = function (html) {
+export function parse(html) {
   var arr, byTag, current, level, result;
   result = [];
   current = void 0;
@@ -94,7 +94,7 @@ module.exports = function (html) {
   html.replace(tagRE, function (tag, index) {
     var isComment, isOpen, nextChar, parent, start;
     isOpen = tag.charAt(1) !== '/';
-    isComment = tag.indexOf('<!--') === 0;
+    isComment = tag.slice(0, 4) === '<!--';
     start = index + tag.length;
     nextChar = html.charAt(start);
     parent = void 0;

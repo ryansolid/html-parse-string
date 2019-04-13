@@ -1,7 +1,7 @@
 // Based on package html-parse-stringify2
 // Expanded to handle webcomponents
 
-var attrString, stringify;
+var attrString, stringifier;
 
 attrString = function (attrs) {
   var buff, key;
@@ -15,7 +15,7 @@ attrString = function (attrs) {
   return ' ' + buff.join(' ');
 };
 
-stringify = function (buff, doc) {
+stringifier = function (buff, doc) {
   switch (doc.type) {
     case 'text':
       return buff + doc.content;
@@ -24,14 +24,14 @@ stringify = function (buff, doc) {
       if (doc.voidElement) {
         return buff;
       }
-      return buff + doc.children.reduce(stringify, '') + '</' + doc.name + '>';
+      return buff + doc.children.reduce(stringifier, '') + '</' + doc.name + '>';
     case 'comment':
       return buff += '<!--' + doc.content + '-->';
   }
 };
 
-module.exports = function (doc) {
+export function stringify(doc) {
   return doc.reduce(function (token, rootEl) {
-    return token + stringify('', rootEl);
+    return token + stringifier('', rootEl);
   }, '');
 };

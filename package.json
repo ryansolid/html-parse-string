@@ -1,9 +1,12 @@
 {
   "name": "html-parse-string",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Utils for parsing and stringify html strings",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "module": "dist/index.js",
   "scripts": {
+    "build": "rollup -c",
+    "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/ryansolid/html-string-parser/issues"
   },
-  "homepage": "https://github.com/ryansolid/html-string-parser#readme"
+  "homepage": "https://github.com/ryansolid/html-string-parser#readme",
+  "devDependencies": {
+    "rollup": "1.10.0"
+  }
 }
