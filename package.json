@@ -1,9 +1,10 @@
 {
   "name": "html-parse-string",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Utils for parsing and stringify html strings",
   "main": "lib/index.js",
   "module": "dist/index.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "prepublishOnly": "npm run build",
