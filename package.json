@@ -1,6 +1,6 @@
 {
   "name": "html-parse-string",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Utils for parsing and stringify html strings",
   "main": "lib/index.js",
   "module": "dist/index.js",
