@@ -5,7 +5,7 @@ var attrRE, lookup, parseTag, pushCommentNode, pushTextNode, tagRE;
 
 tagRE = /(?:<!--[\S\s]*?-->|<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>)/g;
 
-attrRE = /([^\t\n\f \/><"'=]+)|(['"])(.*?)\2/g;
+attrRE = /\s([^'"/\s><]+?)[\s/>]|([^\s=]+)=\s?(".*?"|'.*?')/g
 
 lookup = {
   area: true,
@@ -37,22 +37,54 @@ parseTag = function (tag) {
     attrs: {},
     children: []
   };
-  tag.replace(attrRE, function (match) {
-    if (i % 2) {
-      key = match;
-    } else {
-      if (i === 0) {
-        if (lookup[match] || tag.charAt(tag.length - 2) === '/') {
-          res.voidElement = true;
-        }
-        res.name = match;
-      } else {
-        res.attrs[key] = match.replace(/^['"]|['"]$/g, '');
+  const tagMatch = tag.match(/<\/?([^\s]+?)[/\s>]/)
+  if (tagMatch) {
+    res.name = tagMatch[1]
+    if (
+      lookup[tagMatch[1].toLowerCase()] ||
+      tag.charAt(tag.length - 2) === '/'
+    ) {
+      res.voidElement = true
+    }
+
+    // handle comment tag
+    if (res.name.startsWith('!--')) {
+      const endIndex = tag.indexOf('-->')
+      return {
+        type: 'comment',
+        comment: endIndex !== -1 ? tag.slice(4, endIndex) : '',
       }
     }
-    i++;
-  });
-  return res;
+  }
+  const reg = new RegExp(attrRE)
+  let result = null
+  for (;;) {
+    result = reg.exec(tag)
+
+    if (result === null) {
+      break
+    }
+
+    if (!result[0].trim()) {
+      continue
+    }
+
+    if (result[1]) {
+      const attr = result[1].trim()
+      let arr = [attr, '']
+
+      if (attr.indexOf('=') > -1) {
+        arr = attr.split('=')
+      }
+
+      res.attrs[arr[0]] = arr[1]
+      reg.lastIndex--
+    } else if (result[2]) {
+      res.attrs[result[2]] = result[3].trim().substring(1, result[3].length - 1)
+    }
+  }
+
+  return res
 };
 
 // common logic for pushing a child node onto a list
