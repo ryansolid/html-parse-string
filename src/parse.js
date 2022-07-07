@@ -1,13 +1,21 @@
 // Based on package html-parse-stringify2
 // Expanded to handle webcomponents
 
-var attrRE, lookup, parseTag, pushCommentNode, pushTextNode, tagRE;
+const tagRE = /(?:<!--[\S\s]*?-->|<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>)/g;
 
-tagRE = /(?:<!--[\S\s]*?-->|<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>)/g;
+// const attrRE = /\s([^'"/\s><]+?)[\s/>]|([^\s=]+)=\s?(".*?"|'.*?')/g
+// See https://regexr.com/6p8p0
+const attrRE = /(?:\s(?<boolean>[^/\s><=]+?)(?=[\s/>]))|(?:(?<name>\S+?)(?:\s*=\s*(?:(['"])(?<value1>[\s\S]*?)\3|(?<value2>[^\s>]+))))/g
+//                   ^ capture group 1: boolean attribute name (attributes without values)
+//                                                         ^ capture group 2: non-boolean attribue name
+//                                                                                         ^ capture group 4: non-boolean attribue value with quotes
+//                                                                                                               ^ capture group 5: non-boolean attribue value without quotes
+// TODO
+//  - "/" values in the middle of the HTML tag (they don't self-close the element, but but skipped)
+//  - What other cases?
 
-attrRE = /\s([^'"/\s><]+?)[\s/>]|([^\s=]+)=\s?(".*?"|'.*?')/g
 
-lookup = {
+const lookup = {
   area: true,
   base: true,
   br: true,
@@ -26,11 +34,9 @@ lookup = {
   wbr: true
 };
 
-parseTag = function (tag) {
-  var i, key, res;
-  i = 0;
-  key = void 0;
-  res = {
+function parseTag(/**@type {string}*/tag) {
+  let i = 0;
+  const res = {
     type: 'tag',
     name: '',
     voidElement: false,
@@ -57,43 +63,30 @@ parseTag = function (tag) {
     }
   }
   const reg = new RegExp(attrRE)
-  let result = null
-  for (;;) {
-    result = reg.exec(tag)
+  const matches = tag.matchAll(reg)
+  const matchesArray = Array.from(matches)
 
-    if (result === null) {
-      break
-    }
+  // for (const match of matches) {
+  // for (const match of matchesArray) {
+  for (let i = 0, l = matchesArray.length; i < l; i += 1) {
+    const match = matchesArray[i]
 
-    if (!result[0].trim()) {
-      continue
-    }
+    // TODO named groups method not working yet, groups is undefined in tests (maybe not out in Node.js yet)
+    // const groups = match.groups
+    // res.attrs[groups.boolean || groups.name] = groups.value1 || groups.value2 || ""
 
-    if (result[1]) {
-      const attr = result[1].trim()
-      let arr = [attr, '']
-
-      if (attr.indexOf('=') > -1) {
-        arr = attr.split('=')
-      }
-
-      res.attrs[arr[0]] = arr[1]
-      reg.lastIndex--
-    } else if (result[2]) {
-      res.attrs[result[2]] = result[3].trim().substring(1, result[3].length - 1)
-    }
+    res.attrs[match[1] || match[2]] = match[4] || match[5] || ''
   }
 
   return res
 };
 
 // common logic for pushing a child node onto a list
-pushTextNode = function (list, html, start) {
-  var content, end;
+function pushTextNode(list, html, start) {
   // calculate correct end of the content slice in case there's
   // no tag after the text node.
-  end = html.indexOf('<', start);
-  content = html.slice(start, end === -1 ? void 0 : end);
+  const end = html.indexOf('<', start);
+  const content = html.slice(start, end === -1 ? void 0 : end);
   if (!/^\s*$/.test(content)) {
     list.push({
       type: 'text',
@@ -102,11 +95,10 @@ pushTextNode = function (list, html, start) {
   }
 };
 
-pushCommentNode = function (list, tag) {
-  var content;
+function pushCommentNode(list, tag) {
   // calculate correct end of the content slice in case there's
   // no tag after the text node.
-  content = tag.replace('<!--', '').replace('-->', '');
+  const content = tag.replace('<!--', '').replace('-->', '');
   if (!/^\s*$/.test(content)) {
     list.push({
       type: 'comment',
@@ -117,19 +109,17 @@ pushCommentNode = function (list, tag) {
 
 
 export function parse(html) {
-  var arr, byTag, current, level, result;
-  result = [];
-  current = void 0;
-  level = -1;
-  arr = [];
-  byTag = {};
-  html.replace(tagRE, function (tag, index) {
-    var isComment, isOpen, nextChar, parent, start;
-    isOpen = tag.charAt(1) !== '/';
-    isComment = tag.slice(0, 4) === '<!--';
-    start = index + tag.length;
-    nextChar = html.charAt(start);
-    parent = void 0;
+  const result = [];
+  let current = void 0;
+  let level = -1;
+  const arr = [];
+  const byTag = {};
+  html.replace(tagRE, (tag, index) => {
+    const isOpen = tag.charAt(1) !== '/';
+    const isComment = tag.slice(0, 4) === '<!--';
+    const start = index + tag.length;
+    const nextChar = html.charAt(start);
+    let parent = void 0;
     if (isOpen && !isComment) {
       level++;
       current = parseTag(tag);
