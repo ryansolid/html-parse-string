@@ -3,7 +3,6 @@
 
 const tagRE = /(?:<!--[\S\s]*?-->|<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>)/g;
 
-// const attrRE = /\s([^'"/\s><]+?)[\s/>]|([^\s=]+)=\s?(".*?"|'.*?')/g
 // See https://regexr.com/6p8p0
 const attrRE = /(?:\s(?<boolean>[^/\s><=]+?)(?=[\s/>]))|(?:(?<name>\S+?)(?:\s*=\s*(?:(['"])(?<value1>[\s\S]*?)\3|(?<value2>[^\s>]+))))/g
 //                   ^ capture group 1: boolean attribute name (attributes without values)
@@ -11,7 +10,7 @@ const attrRE = /(?:\s(?<boolean>[^/\s><=]+?)(?=[\s/>]))|(?:(?<name>\S+?)(?:\s*=\
 //                                                                                         ^ capture group 4: non-boolean attribue value with quotes
 //                                                                                                               ^ capture group 5: non-boolean attribue value without quotes
 // TODO
-//  - "/" values in the middle of the HTML tag (they don't self-close the element, but but skipped)
+//  - "/" values in the middle of the HTML tag (they don't self-close the element, but skipped)
 //  - What other cases?
 
 
