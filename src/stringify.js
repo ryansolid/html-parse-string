@@ -1,13 +1,10 @@
 // Based on package html-parse-stringify2
 // Expanded to handle webcomponents
 
-var attrString, stringifier;
-
-attrString = function (attrs) {
-  var buff, key;
-  buff = [];
-  for (key in attrs) {
-    buff.push(key + '="' + attrs[key] + '"');
+function attrString(attrs) {
+  const buff = [];
+  for (const key in attrs) {
+    buff.push(key + '="' + attrs[key].replace(/"/g, '&quot;') + '"');
   }
   if (!buff.length) {
     return '';
@@ -15,7 +12,7 @@ attrString = function (attrs) {
   return ' ' + buff.join(' ');
 };
 
-stringifier = function (buff, doc) {
+function stringifier(buff, doc) {
   switch (doc.type) {
     case 'text':
       return buff + doc.content;
