@@ -6,9 +6,9 @@ const tagRE = /(?:<!--[\S\s]*?-->|<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>)/g;
 // See https://regexr.com/6p8p0
 const attrRE = /(?:\s(?<boolean>[^/\s><=]+?)(?=[\s/>]))|(?:(?<name>\S+?)(?:\s*=\s*(?:(['"])(?<value1>[\s\S]*?)\3|(?<value2>[^\s>]+))))/g
 //                   ^ capture group 1: boolean attribute name (attributes without values)
-//                                                         ^ capture group 2: non-boolean attribue name
-//                                                                                         ^ capture group 4: non-boolean attribue value with quotes
-//                                                                                                               ^ capture group 5: non-boolean attribue value without quotes
+//                                                         ^ capture group 2: non-boolean attribute name
+//                                                                                         ^ capture group 4: non-boolean attribute value with quotes
+//                                                                                                               ^ capture group 5: non-boolean attribute value without quotes
 // TODO
 //  - "/" values in the middle of the HTML tag (they don't self-close the element, but skipped)
 //  - What other cases?
@@ -61,15 +61,10 @@ function parseTag(/**@type {string}*/tag) {
       }
     }
   }
+
   const reg = new RegExp(attrRE)
-  const matches = tag.matchAll(reg)
-  const matchesArray = Array.from(matches)
 
-  // for (const match of matches) {
-  // for (const match of matchesArray) {
-  for (let i = 0, l = matchesArray.length; i < l; i += 1) {
-    const match = matchesArray[i]
-
+  for (const match of tag.matchAll(reg)) {
     // TODO named groups method not working yet, groups is undefined in tests (maybe not out in Node.js yet)
     // const groups = match.groups
     // res.attrs[groups.boolean || groups.name] = groups.value1 || groups.value2 || ""
