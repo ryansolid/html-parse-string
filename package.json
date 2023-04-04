@@ -5,10 +5,11 @@
   "main": "lib/index.js",
   "module": "dist/index.js",
   "types": "types/index.d.ts",
+  "type": "module",
   "scripts": {
     "build": "rollup -c",
     "prepublishOnly": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_OPTIONS='--experimental-vm-modules $NODE_OPTIONS' jest",
     "prepare": "npm run build"
   },
   "repository": {

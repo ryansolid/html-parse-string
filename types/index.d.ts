@@ -3,7 +3,7 @@ export interface IDom {
   content ? : string;
   voidElement: boolean;
   name: string;
-  attrs: { [key: string]: any };
+  attrs: { type: 'attr' | 'directive', name: string, value: string}[];
   children: IDom[];
 }
 

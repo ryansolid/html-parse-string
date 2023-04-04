@@ -39,7 +39,7 @@ function parseTag(/**@type {string}*/tag) {
     type: 'tag',
     name: '',
     voidElement: false,
-    attrs: {},
+    attrs: [],
     children: []
   };
   const tagMatch = tag.match(/<\/?([^\s]+?)[/\s>]/)
@@ -68,8 +68,11 @@ function parseTag(/**@type {string}*/tag) {
     // TODO named groups method not working yet, groups is undefined in tests (maybe not out in Node.js yet)
     // const groups = match.groups
     // res.attrs[groups.boolean || groups.name] = groups.value1 || groups.value2 || ""
-
-    res.attrs[match[1] || match[2]] = match[4] || match[5] || ''
+    if ((match[1] || match[2]).startsWith('use:')) {
+      res.attrs.push({ type: 'directive', name: match[1] || match[2], value: match[4] || match[5] || '' });
+    } else {
+      res.attrs.push({ type: 'attr', name: match[1] || match[2], value: match[4] || match[5] || '' });
+    }
   }
 
   return res

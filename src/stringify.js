@@ -1,10 +1,14 @@
 // Based on package html-parse-stringify2
 // Expanded to handle webcomponents
 
+/**
+ * @param {import('../types/index').IDom['attrs']} attrs 
+ * @returns {string}
+ */
 function attrString(attrs) {
   const buff = [];
-  for (const key in attrs) {
-    buff.push(key + '="' + attrs[key].replace(/"/g, '&quot;') + '"');
+  for (const attr of attrs) {
+    buff.push(attr.name + '="' + attr.value.replace(/"/g, '&quot;') + '"');
   }
   if (!buff.length) {
     return '';
@@ -12,6 +16,11 @@ function attrString(attrs) {
   return ' ' + buff.join(' ');
 };
 
+/**
+ * @param {string} buff 
+ * @param {import('../types/index').IDom} doc 
+ * @returns {string}
+ */
 function stringifier(buff, doc) {
   switch (doc.type) {
     case 'text':
@@ -27,6 +36,10 @@ function stringifier(buff, doc) {
   }
 };
 
+/**
+ * @param {import('../types/index').IDom[]} doc 
+ * @returns {string}
+ */
 export function stringify(doc) {
   return doc.reduce(function (token, rootEl) {
     return token + stringifier('', rootEl);
