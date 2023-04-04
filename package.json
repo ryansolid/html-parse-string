@@ -1,6 +1,6 @@
 {
   "name": "html-parse-string",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Utils for parsing and stringify html strings",
   "main": "lib/index.js",
   "module": "dist/index.js",
@@ -23,6 +23,8 @@
   },
   "homepage": "https://github.com/ryansolid/html-string-parser#readme",
   "devDependencies": {
-    "rollup": "1.10.0"
+    "rollup": "3.10.0",
+    "jest": "29.5.0",
+    "jest-environment-jsdom": "29.5.0"
   }
 }

@@ -21,8 +21,8 @@ export interface IDom {
 
 ```
 
-## parse  
-parse html to idom array  
+## parse
+parse html to idom array
 ```
 const { parse, stringify } = require('html-parse-string');
 const t = `<div>this is div</div>`;
@@ -52,7 +52,7 @@ const { parse, stringify } = require('html-parse-string');
 const t = `<div>this is div</div>`;
 const ast = parse(t);
 console.log(stringify(ast));
-```  
+```
 get html string
 ```
 <div>this is div</div>
